@@ -90,7 +90,7 @@ main {
 }
 
 section {
-    width: fit-content;
+    max-width: 1020px;
     margin: 0 auto;
     padding-left: 0.5em;
     padding-right: 0.5em;
@@ -101,8 +101,26 @@ footer {
     text-align: center;
 }
 
+button {
+    text-align: center;
+    background:none;
+    color:inherit;
+    border:none;
+    padding:0!important;
+    font: inherit;
+    cursor: pointer;
+}
+
+button:focus {
+    outline:none !important;
+}
+
 .avoid-break {
     display: inline-block;
+}
+
+.all {
+    display: flex;
 }
 
 .tablets {
@@ -114,18 +132,22 @@ footer {
 }
 
 .tablets > button {
-    flex: 1;
-    text-align: center;
-    background:none;
-    color:inherit;
-    border:none; 
-    padding:0!important;
-    font: inherit;
     text-decoration: underline;
     font-size: 1.1em;
-    cursor: pointer;
 }
 
-.tablets > button:focus {
-    outline:none !important;
+.panels {
+    display: flex;
+    flex-wrap: wrap;
 }
+
+.panels img {
+    margin: 0 8px 0 8px;
+    padding-bottom: 10px;
+}
+
+section button {
+    width: fit-content;
+    margin: 0 auto;
+}
+
