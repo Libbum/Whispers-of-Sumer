@@ -6,6 +6,7 @@ import Dict exposing (Dict)
 import Html exposing (Html, a, br, button, div, footer, h1, header, hr, img, main_, p, section, span, text)
 import Html.Attributes exposing (attribute, autofocus, class, href, rel, src)
 import Html.Events exposing (onClick, onMouseEnter, onMouseLeave)
+import Html.Events.Extra.Touch as Touch
 import Icons
 import List.Extra exposing (elemIndex, getAt, unconsLast)
 
@@ -19,17 +20,30 @@ type alias Manifest =
     Dict Int (Html Msg)
 
 
+type alias Position =
+    { x : Float
+    , y : Float
+    }
+
+
+type SwipeDirection
+    = Tap
+    | SwipeLeft
+    | SwipeRight
+
+
 type alias Model =
     { manifest : Manifest
     , zoom : Maybe Int
     , showDescription : Bool
     , showControls : Bool
+    , currentSwipeStart : Maybe Position
     }
 
 
 initModel : () -> ( Model, Cmd Msg )
 initModel _ =
-    ( { manifest = buildManifest, zoom = Nothing, showDescription = True, showControls = False }, Cmd.none )
+    ( { manifest = buildManifest, zoom = Nothing, showDescription = True, showControls = False, currentSwipeStart = Nothing }, Cmd.none )
 
 
 type Msg
@@ -39,6 +53,8 @@ type Msg
     | NextImage
     | ToggleDescription
     | ToggleControls Bool
+    | SwipeStart ( Float, Float )
+    | SwipeEnd ( Float, Float )
 
 
 subscriptions : Model -> Sub Msg
@@ -56,42 +72,42 @@ update msg model =
             ( { model | zoom = Nothing }, Cmd.none )
 
         NextImage ->
-            let
-                currentId =
-                    model.zoom |> Maybe.withDefault 0
-
-                keys =
-                    model.manifest |> Dict.keys
-
-                nextImageId =
-                    keys
-                        |> List.Extra.elemIndex currentId
-                        |> Maybe.map ((+) 1)
-                        |> Maybe.andThen (\id -> List.Extra.getAt id keys)
-            in
-            ( { model | zoom = nextImageId }, Cmd.none )
+            ( { model | zoom = nextImageId model.zoom model.manifest }, Cmd.none )
 
         PreviousImage ->
-            let
-                currentId =
-                    model.zoom |> Maybe.withDefault 0
-
-                keys =
-                    model.manifest |> Dict.keys
-
-                previousImageId =
-                    keys
-                        |> List.Extra.elemIndex currentId
-                        |> Maybe.map ((+) -1)
-                        |> Maybe.andThen (\id -> List.Extra.getAt id keys)
-            in
-            ( { model | zoom = previousImageId }, Cmd.none )
+            ( { model | zoom = previousImageId model.zoom model.manifest }, Cmd.none )
 
         ToggleDescription ->
             ( { model | showDescription = not model.showDescription }, Cmd.none )
 
         ToggleControls setting ->
             ( { model | showControls = setting }, Cmd.none )
+
+        SwipeStart ( x, y ) ->
+            ( { model | currentSwipeStart = Just { x = x, y = y } }, Cmd.none )
+
+        SwipeEnd ( x, y ) ->
+            case model.currentSwipeStart of
+                Just start ->
+                    let
+                        direction =
+                            getSwipeDirection start { x = x, y = y }
+                    in
+                    case ( direction, model.zoom ) of
+                        ( SwipeRight, Just _ ) ->
+                            ( { model | currentSwipeStart = Nothing, zoom = nextImageId model.zoom model.manifest }, Cmd.none )
+
+                        ( SwipeLeft, Just _ ) ->
+                            ( { model | currentSwipeStart = Nothing, zoom = previousImageId model.zoom model.manifest }, Cmd.none )
+
+                        ( Tap, Just _ ) ->
+                            ( { model | currentSwipeStart = Nothing, showControls = not model.showControls }, Cmd.none )
+
+                        _ ->
+                            ( { model | currentSwipeStart = Nothing }, Cmd.none )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -189,6 +205,36 @@ panelThumbs manifest =
         )
 
 
+nextImageId : Maybe Int -> Manifest -> Maybe Int
+nextImageId zoom manifest =
+    let
+        currentId =
+            zoom |> Maybe.withDefault 0
+
+        keys =
+            manifest |> Dict.keys
+    in
+    keys
+        |> List.Extra.elemIndex currentId
+        |> Maybe.map ((+) 1)
+        |> Maybe.andThen (\id -> List.Extra.getAt id keys)
+
+
+previousImageId : Maybe Int -> Manifest -> Maybe Int
+previousImageId zoom manifest =
+    let
+        currentId =
+            zoom |> Maybe.withDefault 0
+
+        keys =
+            manifest |> Dict.keys
+    in
+    keys
+        |> List.Extra.elemIndex currentId
+        |> Maybe.map ((+) -1)
+        |> Maybe.andThen (\id -> List.Extra.getAt id keys)
+
+
 viewImage : Int -> Manifest -> Bool -> Bool -> Html Msg
 viewImage id manifest showDescription showControls =
     let
@@ -211,6 +257,11 @@ viewImage id manifest showDescription showControls =
 
         next =
             button [ class "next", controlVisible, onClick NextImage ] [ Icons.chevronRight ]
+
+        swipeOptions =
+            { stopPropagation = False
+            , preventDefault = False -- We still want to zoom, refresh etc
+            }
     in
     div [ class "zoombox" ]
         [ img [ class "zoom", src (imageFile id) ] []
@@ -218,6 +269,8 @@ viewImage id manifest showDescription showControls =
             [ class "control"
             , onMouseEnter (ToggleControls True)
             , onMouseLeave (ToggleControls False)
+            , Touch.onWithOptions "touchstart" swipeOptions (SwipeStart << touchCoordinates)
+            , Touch.onWithOptions "touchend" swipeOptions (SwipeEnd << touchCoordinates)
             ]
             [ previous
             , next
@@ -274,6 +327,40 @@ getContact =
 divDescription : List (Html Msg) -> Html Msg
 divDescription =
     div [ class "description" ]
+
+
+
+-- Swipe Interactions
+
+
+touchCoordinates : Touch.Event -> ( Float, Float )
+touchCoordinates touchEvent =
+    List.head touchEvent.changedTouches
+        |> Maybe.map .clientPos
+        |> Maybe.withDefault ( 0, 0 )
+
+
+getSwipeDirection : Position -> Position -> SwipeDirection
+getSwipeDirection start end =
+    let
+        deltaX =
+            end.x - start.x
+
+        deltaY =
+            end.y - start.y
+
+        sensitivity =
+            3
+    in
+    if abs deltaX > abs deltaY && abs deltaX > sensitivity then
+        if deltaX > 0 then
+            SwipeLeft
+
+        else
+            SwipeRight
+
+    else
+        Tap
 
 
 buildManifest : Manifest
