@@ -5,7 +5,7 @@ import Browser
 import Dict exposing (Dict)
 import Html exposing (Html, a, br, button, div, footer, h1, header, hr, img, main_, p, section, span, text)
 import Html.Attributes exposing (attribute, autofocus, class, href, rel, src)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onMouseEnter, onMouseLeave)
 import Icons
 import List.Extra exposing (elemIndex, getAt, unconsLast)
 
@@ -23,12 +23,13 @@ type alias Model =
     { manifest : Manifest
     , zoom : Maybe Int
     , showDescription : Bool
+    , showControls : Bool
     }
 
 
 initModel : () -> ( Model, Cmd Msg )
 initModel _ =
-    ( { manifest = buildManifest, zoom = Nothing, showDescription = True }, Cmd.none )
+    ( { manifest = buildManifest, zoom = Nothing, showDescription = True, showControls = False }, Cmd.none )
 
 
 type Msg
@@ -37,6 +38,7 @@ type Msg
     | PreviousImage
     | NextImage
     | ToggleDescription
+    | ToggleControls Bool
 
 
 subscriptions : Model -> Sub Msg
@@ -88,12 +90,15 @@ update msg model =
         ToggleDescription ->
             ( { model | showDescription = not model.showDescription }, Cmd.none )
 
+        ToggleControls setting ->
+            ( { model | showControls = setting }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
     case model.zoom of
         Just imageId ->
-            main_ [] [ viewImage imageId model.manifest model.showDescription ]
+            div [] [ viewImage imageId model.manifest model.showDescription model.showControls ]
 
         Nothing ->
             main_ []
@@ -184,8 +189,8 @@ panelThumbs manifest =
         )
 
 
-viewImage : Int -> Manifest -> Bool -> Html Msg
-viewImage id manifest showDescription =
+viewImage : Int -> Manifest -> Bool -> Bool -> Html Msg
+viewImage id manifest showDescription showControls =
     let
         ( description, descriptionIcon ) =
             if showDescription then
@@ -194,19 +199,30 @@ viewImage id manifest showDescription =
             else
                 ( text "", class "desc-off" )
 
+        controlVisible =
+            if showControls then
+                class "visible"
+
+            else
+                class "hidden"
+
         previous =
-            button [ class "previous", onClick PreviousImage ] [ Icons.chevronLeft ]
+            button [ class "previous", controlVisible, onClick PreviousImage ] [ Icons.chevronLeft ]
 
         next =
-            button [ class "next", onClick NextImage ] [ Icons.chevronRight ]
+            button [ class "next", controlVisible, onClick NextImage ] [ Icons.chevronRight ]
     in
     div [ class "zoombox" ]
         [ img [ class "zoom", src (imageFile id) ] []
-        , div [ class "control" ]
+        , div
+            [ class "control"
+            , onMouseEnter (ToggleControls True)
+            , onMouseLeave (ToggleControls False)
+            ]
             [ previous
             , next
-            , button [ class "description-button", descriptionIcon, onClick ToggleDescription ] [ Icons.info ]
-            , button [ class "close", onClick CloseImage, autofocus True ] [ Icons.x ]
+            , button [ class "description-button", descriptionIcon, controlVisible, onClick ToggleDescription ] [ Icons.info ]
+            , button [ class "close", onClick CloseImage, controlVisible, autofocus True ] [ Icons.x ]
             , description
             ]
         ]
