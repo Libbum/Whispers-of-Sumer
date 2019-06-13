@@ -53,6 +53,8 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #0D0D0D;
+    color: #F2B66D;
 }
 
 figcaption,
@@ -70,6 +72,25 @@ img {
 }
 
 /* Whispers */
+
+a:link {
+  color: #B9B4D9;
+}
+
+a:visited, a:active {
+  color: #BF8450;
+}
+
+a:hover, button:hover {
+  color: #D9B1A3;
+}
+
+hr {
+    border-color: #BF8450;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+}
+
 h1 {
     font-size: 2em;
     font-weight: bold;
@@ -78,9 +99,12 @@ h1 {
 }
 
 p {
+    line-height: 1.2em;
+}
+
+header > p {
     text-align: justify;
     font-size: 1.2em;
-    line-height: 1.2em;
     margin: 1em;
 }
 
@@ -151,3 +175,40 @@ section button {
     margin: 0 auto;
 }
 
+.zoombox {
+    display: grid;
+    height: 100vh;
+    background-image: url(../grain.png);
+    background-size: auto, 100% 100%;
+}
+
+.zoom {
+    max-width: 100%;
+    max-height: 100vh;
+    margin: auto;
+    box-shadow: 1px 1px 0 rgba(13,13,13,0.1) inset, 0 0 1px rgba(185,180,217,0.5), 0 0 20px rgba(185,180,217,0.5);
+}
+
+.control {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    position: absolute;
+    z-index: 2;
+}
+
+.description {
+    position: fixed;
+    left: 5vw;
+    bottom: 5vh;
+    font-size: 2.5vh;
+    max-width: 90vw;
+    -webkit-text-stroke: 0.03em #0D0D0D;
+    text-stroke: 0.03em #0D0D0D;
+    line-height: 1.2em;
+    font-weight: 600;
+}
+
+.description > p {
+    margin-bottom: 1em;
+}
