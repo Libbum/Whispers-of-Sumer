@@ -3,29 +3,30 @@ module Main exposing (Msg(..), main, update, view)
 import Base64.Decode exposing (decode, string)
 import Browser
 import Dict exposing (Dict)
-import Html exposing (Html, a, br, div, footer, h1, header, hr, img, main_, p, section, span, text)
+import Html exposing (Html, a, br, button, div, footer, h1, header, hr, img, main_, p, section, span, text)
 import Html.Attributes exposing (class, href, src)
+import Html.Events exposing (onClick)
 import List.Extra exposing (unconsLast)
 
 
-main : Program () (Manifest msg) Msg
+main : Program () Manifest Msg
 main =
-    Browser.sandbox { init = loadManifest, update = update, view = view }
+    Browser.element { init = loadManifest, subscriptions = subscriptions, update = update, view = view }
 
 
-type alias Image msg =
+type alias Image =
     { filename : String
-    , description : Html msg
+    , description : Html Msg
     }
 
 
-type alias Manifest msg =
-    Dict Int (Image msg)
+type alias Manifest =
+    Dict Int Image
 
 
-loadManifest : Manifest msg
-loadManifest =
-    Dict.fromList
+loadManifest : () -> ( Manifest, Cmd Msg )
+loadManifest _ =
+    ( Dict.fromList
         [ ( 0
           , { filename = "00.jpg"
             , description =
@@ -38,25 +39,35 @@ loadManifest =
                     ]
             }
           )
+        , ( 1, { filename = "01.jpg", description = text "" } )
+        , ( 2, { filename = "02.jpg", description = text "" } )
+        , ( 3, { filename = "03.jpg", description = text "" } )
+        , ( 4, { filename = "04.jpg", description = text "" } )
+        , ( 5, { filename = "05.jpg", description = text "" } )
+        , ( 6, { filename = "06.jpg", description = text "" } )
+        , ( 7, { filename = "07.jpg", description = text "" } )
         ]
+    , Cmd.none
+    )
 
 
 type Msg
-    = Increment
-    | Decrement
+    = ShowImage Int
 
 
-update : Msg -> Manifest msg -> Manifest msg
+subscriptions : Manifest -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+update : Msg -> Manifest -> ( Manifest, Cmd Msg )
 update msg manifest =
     case msg of
-        Increment ->
-            Dict.empty
-
-        Decrement ->
-            Dict.empty
+        ShowImage image ->
+            ( manifest, Cmd.none )
 
 
-view : Manifest msg -> Html Msg
+view : Manifest -> Html Msg
 view manifest =
     let
         ( info, link ) =
@@ -73,6 +84,16 @@ view manifest =
             ]
         , section []
             [ viewImage <| Dict.get 0 manifest
+            , div [ class "tablets" ]
+                [ button [ onClick (ShowImage 1) ] [ text "Tablet I" ]
+                , button [ onClick (ShowImage 2) ] [ text "Tablet II" ]
+                , button [ onClick (ShowImage 3) ] [ text "Tablet III" ]
+                , button [ onClick (ShowImage 4) ] [ text "Tablet IV" ]
+                , button [ onClick (ShowImage 5) ] [ text "Tablet V" ]
+                , button [ onClick (ShowImage 6) ] [ text "Tablet VI" ]
+                , button [ onClick (ShowImage 7) ] [ text "Tablet VII" ]
+                ]
+            , hr [] []
             ]
         , footer []
             [ text "Design and text by "
@@ -84,7 +105,7 @@ view manifest =
         ]
 
 
-viewImage : Maybe (Image msg) -> Html Msg
+viewImage : Maybe Image -> Html Msg
 viewImage image =
     case image of
         Just photo ->
@@ -94,7 +115,7 @@ viewImage image =
             text ""
 
 
-imageThumbnail : Image msg -> String
+imageThumbnail : Image -> String
 imageThumbnail image =
     let
         -- We split here and then join the name later to catch `file.name.jpg` conventions (if they are used)

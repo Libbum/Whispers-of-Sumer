@@ -16,17 +16,17 @@ article,
 footer,
 header,
 section {
-  font-size: 100%;
-  font-weight: inherit;
-  margin: 0;
-  padding: 0;
-  vertical-align: baseline;
-  border: 0;
-  background-color: transparent;
+    font-size: 100%;
+    font-weight: inherit;
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+    border: 0;
+    background-color: transparent;
 }
 
 html {
-  font-family:
+    font-family:
     'Fira Sans Condensed',
     -apple-system,
     BlinkMacSystemFont,
@@ -37,24 +37,22 @@ html {
     Cantarell,
     'Helvetica Neue',
     sans-serif;
-  line-height: 1.15;
-  overflow-y: scroll;
-  box-sizing: border-box;
-  height: 100%;
+    line-height: 1.15;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    height: 100%;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
-  background-repeat: no-repeat;
+*,*::before,*::after {
+    box-sizing: inherit;
+    background-repeat: no-repeat;
 }
 
 body {
-  line-height: 1;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    line-height: 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 figcaption,
@@ -62,13 +60,13 @@ figure,
 footer,
 header,
 section {
-  display: block;
+    display: block;
 }
 
 img {
-  max-width: 100%;
-  height: auto;
-  border-style: none;
+    max-width: 100%;
+    height: auto;
+    border-style: none;
 }
 
 /* Whispers */
@@ -94,6 +92,8 @@ main {
 section {
     width: fit-content;
     margin: 0 auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
 footer {
@@ -103,4 +103,29 @@ footer {
 
 .avoid-break {
     display: inline-block;
+}
+
+.tablets {
+    padding-top: 0.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+}
+
+.tablets > button {
+    flex: 1;
+    text-align: center;
+    background:none;
+    color:inherit;
+    border:none; 
+    padding:0!important;
+    font: inherit;
+    text-decoration: underline;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.tablets > button:focus {
+    outline:none !important;
 }
