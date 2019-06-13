@@ -4,9 +4,10 @@ import Base64.Decode exposing (decode, string)
 import Browser
 import Dict exposing (Dict)
 import Html exposing (Html, a, br, button, div, footer, h1, header, hr, img, main_, p, section, span, text)
-import Html.Attributes exposing (attribute, class, href, rel, src)
+import Html.Attributes exposing (attribute, autofocus, class, href, rel, src)
 import Html.Events exposing (onClick)
-import List.Extra exposing (unconsLast)
+import Icons
+import List.Extra exposing (elemIndex, getAt, unconsLast)
 
 
 main : Program () Model Msg
@@ -21,17 +22,21 @@ type alias Manifest =
 type alias Model =
     { manifest : Manifest
     , zoom : Maybe Int
+    , showDescription : Bool
     }
 
 
 initModel : () -> ( Model, Cmd Msg )
 initModel _ =
-    ( { manifest = buildManifest, zoom = Nothing }, Cmd.none )
+    ( { manifest = buildManifest, zoom = Nothing, showDescription = True }, Cmd.none )
 
 
 type Msg
     = ShowImage Int
     | CloseImage
+    | PreviousImage
+    | NextImage
+    | ToggleDescription
 
 
 subscriptions : Model -> Sub Msg
@@ -48,12 +53,47 @@ update msg model =
         CloseImage ->
             ( { model | zoom = Nothing }, Cmd.none )
 
+        NextImage ->
+            let
+                currentId =
+                    model.zoom |> Maybe.withDefault 0
+
+                keys =
+                    model.manifest |> Dict.keys
+
+                nextImageId =
+                    keys
+                        |> List.Extra.elemIndex currentId
+                        |> Maybe.map ((+) 1)
+                        |> Maybe.andThen (\id -> List.Extra.getAt id keys)
+            in
+            ( { model | zoom = nextImageId }, Cmd.none )
+
+        PreviousImage ->
+            let
+                currentId =
+                    model.zoom |> Maybe.withDefault 0
+
+                keys =
+                    model.manifest |> Dict.keys
+
+                previousImageId =
+                    keys
+                        |> List.Extra.elemIndex currentId
+                        |> Maybe.map ((+) -1)
+                        |> Maybe.andThen (\id -> List.Extra.getAt id keys)
+            in
+            ( { model | zoom = previousImageId }, Cmd.none )
+
+        ToggleDescription ->
+            ( { model | showDescription = not model.showDescription }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
     case model.zoom of
         Just imageId ->
-            main_ [] [ viewImage imageId model.manifest ]
+            main_ [] [ viewImage imageId model.manifest model.showDescription ]
 
         Nothing ->
             main_ []
@@ -144,15 +184,31 @@ panelThumbs manifest =
         )
 
 
-viewImage : Int -> Manifest -> Html Msg
-viewImage id manifest =
+viewImage : Int -> Manifest -> Bool -> Html Msg
+viewImage id manifest showDescription =
     let
-        description =
-            Dict.get id manifest |> Maybe.withDefault (text "")
+        ( description, descriptionIcon ) =
+            if showDescription then
+                ( Dict.get id manifest |> Maybe.withDefault (text ""), class "" )
+
+            else
+                ( text "", class "desc-off" )
+
+        previous =
+            button [ class "previous", onClick PreviousImage ] [ Icons.chevronLeft ]
+
+        next =
+            button [ class "next", onClick NextImage ] [ Icons.chevronRight ]
     in
     div [ class "zoombox" ]
-        [ img [ class "zoom", src (imageFile id), onClick CloseImage ] []
-        , div [ class "control" ] [ description ]
+        [ img [ class "zoom", src (imageFile id) ] []
+        , div [ class "control" ]
+            [ previous
+            , next
+            , button [ class "description-button", descriptionIcon, onClick ToggleDescription ] [ Icons.info ]
+            , button [ class "close", onClick CloseImage, autofocus True ] [ Icons.x ]
+            , description
+            ]
         ]
 
 
