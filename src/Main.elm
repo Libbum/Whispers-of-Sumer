@@ -215,7 +215,7 @@ viewFooter =
             ]
         , br [] []
         , a by_nc_sa
-            [ img [ src "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" ] []
+            [ img [ src "/assets/by-nc-sa.png" ] []
             ]
         , br [] []
         , p []
