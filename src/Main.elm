@@ -2,12 +2,14 @@ module Main exposing (Msg(..), main, update, view)
 
 import Base64.Decode exposing (decode, string)
 import Browser
+import Browser.Events exposing (onKeyDown)
 import Dict exposing (Dict)
 import Html exposing (Html, a, br, button, div, footer, h1, header, hr, img, main_, p, section, span, text)
 import Html.Attributes exposing (attribute, autofocus, class, href, rel, src)
 import Html.Events exposing (onClick, onMouseEnter, onMouseLeave)
 import Html.Events.Extra.Touch as Touch
 import Icons
+import Json.Decode as Decode exposing (Decoder)
 import List.Extra exposing (elemIndex, getAt, unconsLast)
 
 
@@ -30,6 +32,13 @@ type SwipeDirection
     = Tap
     | SwipeLeft
     | SwipeRight
+
+
+type Keyboard
+    = Left
+    | Right
+    | Escape
+    | Other
 
 
 type alias Model =
@@ -55,11 +64,33 @@ type Msg
     | ToggleControls Bool
     | SwipeStart ( Float, Float )
     | SwipeEnd ( Float, Float )
+    | KeyPress Keyboard
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    onKeyDown (Decode.map KeyPress keyDecoder)
+
+
+keyDecoder : Decoder Keyboard
+keyDecoder =
+    Decode.map toKeyboard (Decode.field "key" Decode.string)
+
+
+toKeyboard : String -> Keyboard
+toKeyboard key =
+    case key of
+        "ArrowLeft" ->
+            Left
+
+        "ArrowRight" ->
+            Right
+
+        "Escape" ->
+            Escape
+
+        _ ->
+            Other
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -107,6 +138,20 @@ update msg model =
                             ( { model | currentSwipeStart = Nothing }, Cmd.none )
 
                 Nothing ->
+                    ( model, Cmd.none )
+
+        KeyPress key ->
+            case ( key, model.zoom ) of
+                ( Left, Just _ ) ->
+                    ( { model | zoom = previousImageId model.zoom model.manifest }, Cmd.none )
+
+                ( Right, Just _ ) ->
+                    ( { model | zoom = nextImageId model.zoom model.manifest }, Cmd.none )
+
+                ( Escape, Just _ ) ->
+                    ( { model | zoom = Nothing }, Cmd.none )
+
+                _ ->
                     ( model, Cmd.none )
 
 
