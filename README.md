@@ -4,7 +4,7 @@ The Enûma Eliš is one of the oldest creation myths that have survived into mod
 Many years ago, a friend and I envisioned a set of seven clay tablets that attempted to capture the essence of the epic&mdash;seven of course because the Babylonian copy we still have of the story was written on seven tablets.
 This was the result of months of hard work designing, translating, prototyping and moulding: seven meter tall clay tablets that look (to me at least) absolutely stunning.
 
-![The Epic of Creation](dist/assets/images/00.jpg)
+![The Epic of Creation](dist/images/00.jpg)
 
 I've moved to the other side of the world since then, and it's somewhat difficult to move these things&mdash;each weighing about 20 kg.
 Their fate, for the moment, sees them lying buried in a storage container at my brothers house.
