@@ -20,10 +20,10 @@ prodjs: dist/assets/js/whispers.min.js
 	@-rm -f dist/assets/js/whispers.js
 
 serve: dist/assets/js/init.js debugindex debugcss
-	elm-live src/Main.elm -d dist --pushstate --open -- --output=dist/assets/js/whispers.js --optimize
+	elm-live src/Main.elm -d dist --open -- --output=dist/assets/js/whispers.js --optimize
 
 debug: dist/assets/js/init.js debugindex debugcss
-	elm-live src/Main.elm -d dist --pushstate --open -- --output=dist/assets/js/whispers.js --debug
+	elm-live src/Main.elm -d dist --open -- --output=dist/assets/js/whispers.js --debug
 
 debugcss: src/whispers.css
 	cp src/whispers.css dist/assets/css/whispers.css
