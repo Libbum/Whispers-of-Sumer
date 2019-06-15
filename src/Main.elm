@@ -1,4 +1,4 @@
-module Main exposing (Msg(..), main, update, view)
+module Main exposing (main)
 
 import Base64.Decode exposing (decode, string)
 import Browser
@@ -10,7 +10,7 @@ import Html.Events exposing (onClick, onMouseEnter, onMouseLeave)
 import Html.Events.Extra.Touch as Touch
 import Icons
 import Json.Decode as Decode exposing (Decoder)
-import List.Extra exposing (elemIndex, getAt, unconsLast)
+import List.Extra exposing (elemIndex, getAt)
 
 
 main : Program () Model Msg
@@ -215,7 +215,7 @@ viewFooter =
             ]
         , br [] []
         , a by_nc_sa
-            [ img [ src "/assets/by-nc-sa.png" ] []
+            [ img [ src "/whispers/assets/by-nc-sa.png" ] []
             ]
         , br [] []
         , p []
@@ -328,7 +328,7 @@ viewImage id manifest showDescription showControls =
 
 imageFile : Int -> String
 imageFile id =
-    "/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ ".jpg"
+    "/whispers/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ ".jpg"
 
 
 viewImageThumb : Int -> Html Msg
@@ -338,7 +338,7 @@ viewImageThumb id =
 
 imageThumbnail : Int -> String
 imageThumbnail id =
-    "/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ "_thumb.jpg"
+    "/whispers/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ "_thumb.jpg"
 
 
 getContact : ( String, String )
