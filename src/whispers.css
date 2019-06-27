@@ -129,6 +129,11 @@ section {
     padding-right: 0.5em;
 }
 
+section > p {
+    font-size: 1.4em;
+    margin: 1em;
+}
+
 footer {
     margin: 1em;
     text-align: center;
