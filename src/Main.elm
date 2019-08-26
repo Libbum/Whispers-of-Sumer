@@ -215,7 +215,7 @@ viewFooter =
             ]
         , br [] []
         , a by_nc_sa
-            [ img [ src "/whispers/assets/by-nc-sa.png" ] []
+            [ img [ src "/assets/by-nc-sa.png" ] []
             ]
         , br [] []
         , p []
@@ -328,7 +328,7 @@ viewImage id manifest showDescription showControls =
 
 imageFile : Int -> String
 imageFile id =
-    "/whispers/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ ".jpg"
+    "/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ ".jpg"
 
 
 viewImageThumb : Int -> Html Msg
@@ -338,7 +338,7 @@ viewImageThumb id =
 
 imageThumbnail : Int -> String
 imageThumbnail id =
-    "/whispers/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ "_thumb.jpg"
+    "/images/" ++ String.padLeft 2 '0' (String.fromInt id) ++ "_thumb.jpg"
 
 
 getContact : ( String, String )
