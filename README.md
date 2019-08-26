@@ -14,3 +14,10 @@ Or, just maybe, I'll pay some art courier a stupid sum of money to ship them to 
 Until such a time, what we have is this gallery.
 
 [https://whispers.neophilus.net/](https://whispers.neophilus.net/)
+
+# Licenses
+
+The code in this repository is released under MIT, so feel free to use it as you will under the stipulations therein.
+
+However, please be aware the images in the gallery are released under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+Check the web page for further details.
