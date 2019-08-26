@@ -6,7 +6,7 @@ clean:
 	@-rm -f $(TARGETS)
 
 deploy: build
-	rsync -avr --chown=www-data:www-data --checksum --delete -e ssh dist/ AkashaR:neophilus/whispers
+	rsync -avr --chown=http:www --checksum --delete -e ssh dist/ AkashaR:whispers
 
 build: prodcss prodindex prodjs
 

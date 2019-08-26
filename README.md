@@ -13,4 +13,4 @@ Or, just maybe, I'll pay some art courier a stupid sum of money to ship them to 
 
 Until such a time, what we have is this gallery.
 
-[https://www.neophilus.net/whispers](https://www.neophilus.net/whispers)
+[https://whispers.neophilus.net/](https://whispers.neophilus.net/)
