@@ -572,7 +572,7 @@ buildManifest =
                     , br [] []
                     , text "Meanwhile, the gods of battle were sharpening their weapons."
                     , br [] []
-                    , text "Face to face they came, Tiamat and Marduk, sage of the gods.<Paste>"
+                    , text "Face to face they came, Tiamat and Marduk, sage of the gods."
                     , br [] []
                     , text "They engaged in combat, they closed for battle.”"
                     ]
